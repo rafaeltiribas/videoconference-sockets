@@ -6,7 +6,6 @@ PORT = 5050 # Porta do servidor.
 SERVER = socket.gethostbyname(socket.gethostname()) # Pega o IP da máquina automaticamente.
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
-DISCONNECT_MESSAGE = "!DESCONECTAR"
 
 #   Socket
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -23,9 +22,19 @@ def gerencia_cliente(conn: any, end: any) -> None:
         tamanho_msg = get_tamanho(conn)
         if tamanho_msg:
             msg = conn.recv(tamanho_msg).decode(FORMAT)
-            if msg == DISCONNECT_MESSAGE:
-                conectado = False
-            print(f"[{end}] {msg}")
+            msg = msg.split()
+            match msg[0]:
+                case "CADASTRO":
+                    print("[NOVO CADASTRO]")
+                    cadastro(msg[1], end)
+                case "CONSULTA":
+                    print("[CONSULTA USUÁRIO]")
+                    endereco = consulta(msg[1])
+                    print(f"[ENDERECO {msg[1]}]: {endereco}") # ! DEVE SER RETORNADO PARA O CLIENT
+                case "DESCONECTAR":
+                    print("[DESCONECTANDO USUARIO]")
+                    conectado = False
+            print(f"[{end}] {msg}\n[TABELA USUÁRIOS ATIVOS] {usuarios}")
     conn.close()
 
 #   Retorna o tamanho da mensagem que o cliente está enviando.
