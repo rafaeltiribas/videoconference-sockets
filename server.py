@@ -21,17 +21,20 @@ def gerencia_cliente(conn: any, end: any) -> None:
     conectado = True
     while conectado:
         tamanho_msg = get_tamanho(conn)
-        msg = conn.recv(tamanho_msg).decode(FORMAT)
-        if msg == DISCONNECT_MESSAGE:
-            conectado = False
-        print(f"[{end}] {msg}")
+        if tamanho_msg:
+            msg = conn.recv(tamanho_msg).decode(FORMAT)
+            if msg == DISCONNECT_MESSAGE:
+                conectado = False
+            print(f"[{end}] {msg}")
     conn.close()
 
 #   Retorna o tamanho da mensagem que o cliente está enviando.
-def get_tamanho(conn):
+def get_tamanho(conn: any):
     tamanho_msg = conn.recv(HEADER).decode(FORMAT)
-    tamanho_msg = int(tamanho_msg)
-    return tamanho_msg
+    if tamanho_msg:
+        tamanho_msg = int(tamanho_msg)
+        return tamanho_msg
+    return None
     
 #   Função de inicialização do servidor.
 def iniciar() -> None:
@@ -61,3 +64,5 @@ def remove(nome: str) -> None:
 #   Funcionamento
 print("[...Iniciando o servidor...]")
 iniciar()
+
+#   Desafio -> Retornar mensagem para o client.
