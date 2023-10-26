@@ -1,15 +1,46 @@
 import socket
 import threading
 
-# SOCKET
+HEADER = 64
 PORT = 5050 # Porta do servidor.
 SERVER = socket.gethostbyname(socket.gethostname()) # Pega o IP da máquina automaticamente.
 ADDR = (SERVER, PORT)
+FORMAT = 'utf-8'
+DISCONNECT_MESSAGE = "!DESCONECTAR"
+
+#   Socket
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDR)
 
 #   Armazenamento de usuários.          ! Pode ser trocado por armazenamento em um arquivo.
 usuarios = {} # {nome : ipporta} 
+
+#   Função para lidar com o processo cliente e suas requisições.
+def gerencia_cliente(conn: any, end: any) -> None:
+    print(f"[Nova Conexão] {end} conectado.")
+    conectado = True
+    while conectado:
+        tamanho_msg = get_tamanho(conn)
+        msg = conn.recv(tamanho_msg).decode(FORMAT)
+        if msg == DISCONNECT_MESSAGE:
+            conectado = False
+        print(f"[{end}] {msg}")
+    conn.close()
+
+#   Retorna o tamanho da mensagem que o cliente está enviando.
+def get_tamanho(conn):
+    tamanho_msg = conn.recv(HEADER).decode(FORMAT)
+    tamanho_msg = int(tamanho_msg)
+    return tamanho_msg
+    
+#   Função de inicialização do servidor.
+def iniciar() -> None:
+    server.listen()
+    while True:
+        conn, end = server.accept()
+        thread = threading.Thread(target=gerencia_cliente, args=(conn, end))    # Executa em thread a comunicação com a nova conexão.
+        thread.start()
+        print(f"[Conexões Ativas] {threading.active_count() - 1}")
 
 #   Função de cadastro.
 def cadastro(nome: str, endereco: str) -> None:
@@ -26,11 +57,7 @@ def consulta(nome: str) -> str:
 #   Função de remoção de um usuário.
 def remove(nome: str) -> None:
     usuarios.pop(nome)
-
-# Testes.
-#cadastro("rafael", "123123")
-#cadastro("rafael", "123123123")
-#print(usuarios)
-#print(consulta("rafael"))
-#remove("rafael")
-#print(usuarios)
+    
+#   Funcionamento
+print("[...Iniciando o servidor...]")
+iniciar()
