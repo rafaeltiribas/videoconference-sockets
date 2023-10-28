@@ -26,14 +26,15 @@ def gerencia_cliente(conn: any, end: any) -> None:
             match msg[0]:
                 case "CADASTRO":
                     print("[NOVO CADASTRO]")
-                    cadastro(msg[1], end)
+                    cadastro(msg[1], end, conn)
                 case "CONSULTA":
                     print("[CONSULTA USUÁRIO]")
                     endereco = consulta(msg[1])
-                    print(f"[ENDERECO {msg[1]}]: {endereco}") # ! DEVE SER RETORNADO PARA O CLIENT
+                    conn.send(f"[ENDERECO {msg[1]}]: {endereco}".encode(FORMAT))
                 case "DESCONECTAR":
                     print("[DESCONECTANDO USUARIO]")
                     conectado = False
+                    conn.send("[DESCONECTADO]".encode(FORMAT))
             print(f"[{end}] {msg}\n[TABELA USUÁRIOS ATIVOS] {usuarios}")
     conn.close()
 
@@ -55,12 +56,14 @@ def iniciar() -> None:
         print(f"[Conexões Ativas] {threading.active_count() - 1}")
 
 #   Função de cadastro.
-def cadastro(nome: str, endereco: str) -> None:
+def cadastro(nome: str, endereco: str, conn: any) -> None:
     if usuarios.get(nome, 0) == 0:  # Checa se o nome já não está cadastrado no sistema.
         usuarios[nome] = endereco
         print("Novo usuário cadastrado.")
+        conn.send("[CADASTRO REALIZADO COM SUCESSO]".encode(FORMAT))
         return
     print("Usuário já cadastrado.")
+    conn.send("[ESTE USUÁRIO JÁ ESTÁ CADASTRADO]".encode(FORMAT))
 
 #   Função de consulta do cliente.
 def consulta(nome: str) -> str:

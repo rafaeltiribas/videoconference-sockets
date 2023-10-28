@@ -29,11 +29,14 @@ while conectado:
             print("[DIGITE O NOME DE USUÁRIO]:")
             nome = input()
             envia(f"{opcao} {nome}")
+            print(client.recv(2048))
         case "CONSULTA":
             print("[DIGITE O NOME DE USUÁRIO DO ENDEREÇO A SER CONSULTADO]:")
             nome = input()
             envia(f"{opcao} {nome}")
+            print(client.recv(2048))
         case "DESCONECTAR":
             print("[VOCÊ SERÁ DESCONECTADO E DESVINCULADO DO SERVIDOR DE REGISTRO].")
             envia("DESCONECTAR")
             conectado = False
+            print(client.recv(2048))
