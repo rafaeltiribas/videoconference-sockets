@@ -34,6 +34,7 @@ def gerencia_cliente(conn: any, end: any) -> None:
                     conectado = False
                     remove(nome)
                     conn.send("[DESCONECTADO]".encode(FORMAT))
+                    #   !!! FECHAR O SOCKET:?
             print(f"[{end}] {msg}\n[TABELA USUÁRIOS ATIVOS] {usuarios}")
     conn.close()
 

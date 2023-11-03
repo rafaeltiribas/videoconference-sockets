@@ -39,4 +39,4 @@ while conectado:
             print("[VOCÊ SERÁ DESCONECTADO E DESVINCULADO DO SERVIDOR DE REGISTRO].")
             envia("DESCONECTAR")
             conectado = False
-            print(client.recv(2048))
+            print(client.recv(2048))    # O print recebido deve ser ajustado -> b'String'
