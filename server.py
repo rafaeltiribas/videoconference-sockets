@@ -55,7 +55,6 @@ def ligar(endereco_dest, conn):
         conn.send("[ESTAO TE LIGANDO]".encode(FORMAT))
         dest_conn.send("[ESTAO TE LIGANDO]".encode(FORMAT))
     
-
 #   Retorna o tamanho da mensagem que o cliente está enviando.
 def get_tamanho(conn: any):
     tamanho_msg = conn.recv(HEADER).decode(FORMAT)
