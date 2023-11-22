@@ -3,6 +3,7 @@ from vidstream import CameraClient
 from vidstream import StreamingServer
 import threading
 import time
+import random
 
 #   Cadastro => "CADASTRO, nome"
 #   Consulta => "CONSULTA, nome_consulta"
@@ -27,12 +28,9 @@ def envia(msg, client):
 
 def recebe(client):
     while True:
-        print("[ESPERANDO MSG SERVIDOR]")
         mensagem = client.recv(2048).decode(FORMAT)
-        print("[RECEBEU MSG SERVIDOR]")
         if mensagem != '':
-            print(mensagem)
-            
+            print(mensagem)  
         else:
             print("mensagem vazia")
 
@@ -50,26 +48,37 @@ def iniciar_client(client):
                 porta = input()
                 envia(f"{opcao} {nome} {porta}", client)
                 PORT_CLIENT = int(porta)
-                #print(client.recv(2048).decode(FORMAT))
-                #   Criar o receiver do cliente 
+                #   Criar o receiver do cliente streaming de video
                 receiver = StreamingServer(socket.gethostbyname(socket.gethostname()), PORT_CLIENT) # este codigo impede que de erro. mas por que?
             case "CONSULTA":
                 print("[DIGITE O NOME DE USUÁRIO DO ENDEREÇO A SER CONSULTADO]:")
                 nome = input()
                 envia(f"{opcao} {nome}", client)
-                #print(client.recv(2048).decode(FORMAT))
-                receiver = StreamingServer(socket.gethostbyname(socket.gethostname()), PORT_CLIENT)
+                
+                # Se não tem este pedaço de código ele fica preso na thread de receber
+                # Então estou usando para evitar esse erro, mesmo que eu não use essa variável para nada.
+                # Foi a solução que encontrei enquanto não entendo a origem do problema.
+                numero_aleatorio = random.randint(6000, 60000)
+                bug_fix = StreamingServer(socket.gethostbyname(socket.gethostname()), numero_aleatorio)
+                
+                
             case "DESCONECTAR":
                 print("[VOCÊ SERÁ DESCONECTADO E DESVINCULADO DO SERVIDOR DE REGISTRO].")
                 envia("DESCONECTAR")
                 conectado = False
-                #print(client.recv(2048))    # O print recebido deve ser ajustado -> b'String'
                 client.close()
             case "LIGAR":
                 print("[DIGITE O ENDERECO IP/PORTA DA CONEXAO] [EXEMPLO] [25.1.98.186:12766] [IP:PORTA]") 
                 end_conn = input()
                 envia(f"{opcao} {end_conn}", client)
-                #print(client.recv(2048).decode(FORMAT))
+                
+                # Se não tem este pedaço de código ele fica preso na thread de receber
+                # Então estou usando para evitar esse erro, mesmo que eu não use essa variável para nada.
+                # Foi a solução que encontrei enquanto não entendo a origem do problema.
+                numero_aleatorio = random.randint(6000, 60000)
+                bug_fix = StreamingServer(socket.gethostbyname(socket.gethostname()), numero_aleatorio)
+                
+                
         print("[LOOP CONCLUIDO]")
             
 if __name__ == "__main__":
