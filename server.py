@@ -13,6 +13,7 @@ server.bind(ADDR)
 
 #   Armazenamento de usuários.          ! Pode ser trocado por armazenamento em um arquivo.
 usuarios = {} # {nome : ipporta} 
+conexoes_usuarios = {} # Relacionar {ipporta:conexao}
 
 #   Função para lidar com o processo cliente e suas requisições.
 def gerencia_cliente(conn: any, end: any) -> None:
@@ -26,7 +27,8 @@ def gerencia_cliente(conn: any, end: any) -> None:
             match msg[0]:
                 case "CADASTRO":
                     nome = msg[1]
-                    cadastro(nome, end, conn)
+                    porta = msg[2]
+                    cadastro(nome, porta, end, conn)
                 case "CONSULTA":
                     endereco = consulta(msg[1])
                     conn.send(f"[ENDERECO {msg[1]}]: {endereco}".encode(FORMAT))
@@ -35,8 +37,24 @@ def gerencia_cliente(conn: any, end: any) -> None:
                     remove(nome)
                     conn.send("[DESCONECTADO]".encode(FORMAT))
                     #   !!! FECHAR O SOCKET:?
+                case "LIGAR":
+                    ligar(msg[1], conn)
             print(f"[{end}] {msg}\n[TABELA USUÁRIOS ATIVOS] {usuarios}")
     conn.close()
+
+#   Funcao para ligacao
+def ligar(endereco_dest, conn):
+    print("[LIGANDO]")
+    print(endereco_dest)
+    print(conexoes_usuarios)
+    if endereco_dest in conexoes_usuarios:
+        print("[USUARIO ENCONTRADO]")
+        dest_conn = conexoes_usuarios[endereco_dest]
+        print(dest_conn)
+        print(conn)
+        conn.send("[ESTAO TE LIGANDO]".encode(FORMAT))
+        dest_conn.send("[ESTAO TE LIGANDO]".encode(FORMAT))
+    
 
 #   Retorna o tamanho da mensagem que o cliente está enviando.
 def get_tamanho(conn: any):
@@ -56,9 +74,13 @@ def iniciar() -> None:
         print(f"[Conexões Ativas] {threading.active_count() - 1}")
 
 #   Função de cadastro.
-def cadastro(nome: str, endereco: str, conn: any) -> None:
+def cadastro(nome: str, porta: str, endereco: str, conn: any) -> None:
     if usuarios.get(nome, 0) == 0:  # Checa se o nome já não está cadastrado no sistema.
-        usuarios[nome] = endereco
+        end_client = (endereco,) + (porta,)
+        end_client = (end_client[0][0],) + (end_client[1],)
+        end_client = ":".join(map(str, end_client))
+        usuarios[nome] = end_client
+        conexoes_usuarios[end_client] = conn
         conn.send("[CADASTRO REALIZADO COM SUCESSO]".encode(FORMAT))
         return
     conn.send("[ESTE USUÁRIO JÁ ESTÁ CADASTRADO]".encode(FORMAT))
