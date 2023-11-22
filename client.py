@@ -26,11 +26,10 @@ def envia(msg, client):
     client.send(mensagem)
 
 def recebe(client):
-    print("parei aqui")
     while True:
-        print(".")
+        print("[ESPERANDO MSG SERVIDOR]")
         mensagem = client.recv(2048).decode(FORMAT)
-        print("passei")
+        print("[RECEBEU MSG SERVIDOR]")
         if mensagem != '':
             print(mensagem)
             
@@ -38,6 +37,7 @@ def recebe(client):
             print("mensagem vazia")
 
 def iniciar_client(client):
+    PORT_CLIENT = "None"
     conectado = True
     while conectado:
         print("[CADASTRO]   |   [CONSULTA]    |   [DESCONECTAR]    |   [LIGAR]")
@@ -52,12 +52,13 @@ def iniciar_client(client):
                 PORT_CLIENT = int(porta)
                 #print(client.recv(2048).decode(FORMAT))
                 #   Criar o receiver do cliente 
-                receiver = StreamingServer(socket.gethostbyname(socket.gethostname()), PORT_CLIENT)
+                receiver = StreamingServer(socket.gethostbyname(socket.gethostname()), PORT_CLIENT) # este codigo impede que de erro. mas por que?
             case "CONSULTA":
                 print("[DIGITE O NOME DE USUÁRIO DO ENDEREÇO A SER CONSULTADO]:")
                 nome = input()
                 envia(f"{opcao} {nome}", client)
                 #print(client.recv(2048).decode(FORMAT))
+                receiver = StreamingServer(socket.gethostbyname(socket.gethostname()), PORT_CLIENT)
             case "DESCONECTAR":
                 print("[VOCÊ SERÁ DESCONECTADO E DESVINCULADO DO SERVIDOR DE REGISTRO].")
                 envia("DESCONECTAR")
@@ -69,7 +70,7 @@ def iniciar_client(client):
                 end_conn = input()
                 envia(f"{opcao} {end_conn}", client)
                 #print(client.recv(2048).decode(FORMAT))
-        print("oi")
+        print("[LOOP CONCLUIDO]")
             
 if __name__ == "__main__":
 

@@ -30,29 +30,25 @@ def gerencia_cliente(conn: any, end: any) -> None:
                     porta = msg[2]
                     cadastro(nome, porta, end, conn)
                 case "CONSULTA":
-                    endereco = consulta(msg[1])
-                    conn.send(f"[ENDERECO {msg[1]}]: {endereco}".encode(FORMAT))
+                    nome = msg[1]
+                    endereco = consulta(nome, conn)
                 case "DESCONECTAR":
                     conectado = False
                     remove(nome)
                     conn.send("[DESCONECTADO]".encode(FORMAT))
                     #   !!! FECHAR O SOCKET:?
                 case "LIGAR":
-                    ligar(msg[1], conn)
+                    endereco_destino = msg[1]
+                    ligar(endereco_destino, conn)
             print(f"[{end}] {msg}\n[TABELA USUÁRIOS ATIVOS] {usuarios}")
     conn.close()
 
 #   Funcao para ligacao
 def ligar(endereco_dest, conn):
     print("[LIGANDO]")
-    print(endereco_dest)
-    print(conexoes_usuarios)
     if endereco_dest in conexoes_usuarios:
         print("[USUARIO ENCONTRADO]")
         dest_conn = conexoes_usuarios[endereco_dest]
-        print(dest_conn)
-        print(conn)
-        conn.send("[ESTAO TE LIGANDO]".encode(FORMAT))
         dest_conn.send("[ESTAO TE LIGANDO]".encode(FORMAT))
     
 #   Retorna o tamanho da mensagem que o cliente está enviando.
@@ -85,8 +81,10 @@ def cadastro(nome: str, porta: str, endereco: str, conn: any) -> None:
     conn.send("[ESTE USUÁRIO JÁ ESTÁ CADASTRADO]".encode(FORMAT))
 
 #   Função de consulta do cliente.
-def consulta(nome: str) -> str:
-    return usuarios.get(nome, 0)
+def consulta(nome: str, conn: any) -> str:
+    endereco = usuarios.get(nome, 0)
+    conn.send(f"[ENDERECO {nome}]: {endereco}".encode(FORMAT))
+    return
 
 #   Função de remoção de um usuário.
 def remove(nome: str) -> None:
