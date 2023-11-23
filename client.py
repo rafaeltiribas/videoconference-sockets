@@ -18,6 +18,9 @@ ADDR = (SERVER, PORT)
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(ADDR)
 
+#   Varável para indicar se esta recebendo chamada.
+recebendo_chamada = False
+
 def envia(msg, client):
     mensagem = msg.encode(FORMAT)
     tamanho_msg = len(mensagem)
@@ -30,9 +33,18 @@ def recebe(client):
     while True:
         mensagem = client.recv(2048).decode(FORMAT)
         if mensagem != '':
-            print(mensagem)  
+            print(mensagem) 
+            if(mensagem == "[ESTAO TE LIGANDO]"):
+                recebendo_chamada = True
+                #receber_ligacao(client)
         else:
-            print("mensagem vazia")
+            print("[MENSAGEM VAZIA]")
+
+'''            
+def receber_ligacao(client):
+    # Isso funciona
+    print("[LICAGAO RECEBIDA]")
+'''
 
 def iniciar_client(client):
     PORT_CLIENT = "None"
@@ -79,7 +91,7 @@ def iniciar_client(client):
                 bug_fix = StreamingServer(socket.gethostbyname(socket.gethostname()), numero_aleatorio)
                 
                 
-        print("[LOOP CONCLUIDO]")
+        #print("[LOOP CONCLUIDO]")
             
 if __name__ == "__main__":
 
