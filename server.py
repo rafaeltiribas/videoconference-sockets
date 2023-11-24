@@ -40,6 +40,9 @@ def gerencia_cliente(conn: any, end: any) -> None:
                 case "LIGAR":
                     endereco_destino = msg[1]
                     ligar(endereco_destino, conn)
+                    res = msg[1]
+                    print(res)
+                    
             print(f"[{end}] {msg}\n[TABELA USUÁRIOS ATIVOS] {usuarios}")
     conn.close()
 
@@ -50,6 +53,14 @@ def ligar(endereco_dest, conn):
         print("[USUARIO ENCONTRADO]")
         dest_conn = conexoes_usuarios[endereco_dest]
         dest_conn.send("[ESTAO TE LIGANDO]".encode(FORMAT))
+        tamanho_msg = get_tamanho(conn)
+        msg = conn.recv(tamanho_msg).decode(FORMAT)
+        msg = msg.split()
+        match msg[0]:
+            case "ACEITAR":
+                print("ACEITOU")
+            case "RECUSAR":
+                print("RECUSOU")
     
 #   Retorna o tamanho da mensagem que o cliente está enviando.
 def get_tamanho(conn: any):
