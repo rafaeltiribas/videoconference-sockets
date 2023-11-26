@@ -36,20 +36,22 @@ def recebe(client):
             print(mensagem) 
             if(mensagem == "[ESTAO TE LIGANDO]"):
                 recebendo_chamada = True
-                #receber_ligacao(client)
+                receber_ligacao(client)
         else:
             print("[MENSAGEM VAZIA]")
 
-'''            
+         
 def receber_ligacao(client):
-    # Isso funciona
+    #Isso funciona
     print("[LICAGAO RECEBIDA]")
-'''
+    print("[ACEITAR] | [RECUSAR]")
+    escolha = input()
+    envia(f"{escolha}", client)
 
 def iniciar_client(client):
     PORT_CLIENT = "None"
     conectado = True
-    while conectado:
+    while conectado and not recebendo_chamada:
         print("[CADASTRO]   |   [CONSULTA]    |   [DESCONECTAR]    |   [LIGAR]")
         opcao = input()
         match opcao:
