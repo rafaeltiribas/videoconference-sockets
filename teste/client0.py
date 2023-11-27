@@ -3,9 +3,10 @@ from vidstream import StreamingServer
 
 import threading
 import time
+import socket
 
-receiving = StreamingServer('192.168.0.177', 7777)
-sending = CameraClient('192.168.0.177', 8888)
+receiving = StreamingServer(socket.gethostbyname(socket.gethostname()), 7777)
+sending = CameraClient(socket.gethostbyname(socket.gethostname()), 8888)
 
 t1 = threading.Thread(target=receiving.start_server)
 t1.start()
