@@ -18,9 +18,6 @@ ADDR = (SERVER, PORT)
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(ADDR)
 
-#   Varável para indicar se esta recebendo chamada.
-recebendo_chamada = False
-
 def envia(msg, client):
     mensagem = msg.encode(FORMAT)
     tamanho_msg = len(mensagem)
@@ -33,25 +30,34 @@ def recebe(client):
     while True:
         mensagem = client.recv(2048).decode(FORMAT)
         if mensagem != '':
-            print(mensagem) 
-            if(mensagem == "[ESTAO TE LIGANDO]"):
-                recebendo_chamada = True
-                receber_ligacao(client)
+            msg = mensagem.split()
+            if(msg[0] == "[ESTAOTELIGANDO]"):
+                print(msg[0])
+                print(f"[ENDERECO]: {msg[1]}")
+                print("[ACEITAR] | [RECUSAR]")
+            else:
+                print(mensagem)
         else:
             print("[MENSAGEM VAZIA]")
 
-         
-def receber_ligacao(client):
+
+'''
+def receber_ligacao(client, end_ligacao):
     #Isso funciona
     print("[LICAGAO RECEBIDA]")
     print("[ACEITAR] | [RECUSAR]")
+    print(end_ligacao)
     escolha = input()
     envia(f"{escolha}", client)
+    
+    numero_aleatorio = random.randint(6000, 60000)
+    bug_fix = StreamingServer(socket.gethostbyname(socket.gethostname()), numero_aleatorio)
+'''
 
 def iniciar_client(client):
     PORT_CLIENT = "None"
     conectado = True
-    while conectado and not recebendo_chamada:
+    while conectado:
         print("[CADASTRO]   |   [CONSULTA]    |   [DESCONECTAR]    |   [LIGAR]")
         opcao = input()
         match opcao:
@@ -81,10 +87,41 @@ def iniciar_client(client):
                 envia("DESCONECTAR")
                 conectado = False
                 client.close()
+                
             case "LIGAR":
                 print("[DIGITE O ENDERECO IP/PORTA DA CONEXAO] [EXEMPLO] [25.1.98.186:12766] [IP:PORTA]") 
                 end_conn = input()
                 envia(f"{opcao} {end_conn}", client)
+                end_separado = end_conn.split(":")
+                sending = CameraClient(end_separado[0], int((end_separado[1])))
+                t1 = threading.Thread(target=receiver.start_stream)
+                t1.start()
+                
+                time.sleep(2)
+                
+                t2 = threading.Thread(target=sending.start_stream)
+                t2.start()
+                
+                while input("") != "PARAR":
+                    continue
+                
+                receiver.start_server()
+                sending.stop_stream()
+            
+            case "ACEITAR":
+                print("[LIGACAO ACEITA]")
+                end_aceite = input()
+                end_separado = end_aceite.split(":")
+                sending = CameraClient(end_separado[0], int((end_separado[1])))
+                t1 = threading.Thread(target=receiver.start_stream)
+                t1.start()
+                
+                time.sleep(2)
+                
+                t2 = threading.Thread(target=sending.start_stream)
+                t2.start()
+                
+                
                 
                 # Se não tem este pedaço de código ele fica preso na thread de receber
                 # Então estou usando para evitar esse erro, mesmo que eu não use essa variável para nada.

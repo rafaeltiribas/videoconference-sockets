@@ -42,26 +42,44 @@ def gerencia_cliente(conn: any, end: any) -> None:
                     ligar(endereco_destino, conn)
                     res = msg[1]
                     print(res)
+                
+                #case "ACEITAR":
+                   # end_remetente = msg[1]
+                   # if end_remetente in conexoes_usuarios:
+                       # dest_conn = conexoes_usuarios[end_remetente]
+                      #  dest_conn.send(f"[ACEITA]".encode(FORMAT))
+                
+                        
+                
                     
             print(f"[{end}] {msg}\n[TABELA USUÁRIOS ATIVOS] {usuarios}")
     conn.close()
+
+def aceitar_ligacao(endereco):
+    print("[RESPONDENDO ACEITE LIGACAO]")
+    if endereco in conexoes_usuarios:
+        dest_conn = conexoes_usuarios[endereco]
+        dest_conn.send(f"[ACEITA]")
 
 #   Funcao para ligacao
 def ligar(endereco_dest, conn):
     print("[LIGANDO]")
     if endereco_dest in conexoes_usuarios:
         print("[USUARIO ENCONTRADO]")
+        end_ligando = conexoes_contrario[conn]
         dest_conn = conexoes_usuarios[endereco_dest]
-        dest_conn.send("[ESTAO TE LIGANDO]".encode(FORMAT))
+        dest_conn.send(f"[ESTAOTELIGANDO] {end_ligando}".encode(FORMAT)) 
+        '''
         tamanho_msg = get_tamanho(conn)
-        msg = conn.recv(tamanho_msg).decode(FORMAT)
+        msg = dest_conn.recv(tamanho_msg).decode(FORMAT)
         msg = msg.split()
         match msg[0]:
             case "ACEITAR":
                 print("ACEITOU")
+                #conn.send(f"[ACEITA]".encode(FORMAT))
             case "RECUSAR":
                 print("RECUSOU")
-    
+        '''
 #   Retorna o tamanho da mensagem que o cliente está enviando.
 def get_tamanho(conn: any):
     tamanho_msg = conn.recv(HEADER).decode(FORMAT)
@@ -80,6 +98,7 @@ def iniciar() -> None:
         print(f"[Conexões Ativas] {threading.active_count() - 1}")
 
 #   Função de cadastro.
+conexoes_contrario = {} # conn : end:porta
 def cadastro(nome: str, porta: str, endereco: str, conn: any) -> None:
     if usuarios.get(nome, 0) == 0:  # Checa se o nome já não está cadastrado no sistema.
         end_client = (endereco,) + (porta,)
@@ -87,14 +106,15 @@ def cadastro(nome: str, porta: str, endereco: str, conn: any) -> None:
         end_client = ":".join(map(str, end_client))
         usuarios[nome] = end_client
         conexoes_usuarios[end_client] = conn
-        conn.send("[CADASTRO REALIZADO COM SUCESSO]".encode(FORMAT))
+        conexoes_contrario[conn] = end_client
+        conn.send("[CADASTRO_REALIZADO_COM_SUCESSO]".encode(FORMAT))
         return
-    conn.send("[ESTE USUÁRIO JÁ ESTÁ CADASTRADO]".encode(FORMAT))
+    conn.send("[ESTE_USUÁRIO_JÁ_ESTÁ_CADASTRADO]".encode(FORMAT))
 
 #   Função de consulta do cliente.
 def consulta(nome: str, conn: any) -> str:
     endereco = usuarios.get(nome, 0)
-    conn.send(f"[ENDERECO {nome}]: {endereco}".encode(FORMAT))
+    conn.send(f"[ENDERECO_{nome}]: {endereco}".encode(FORMAT))
     return
 
 #   Função de remoção de um usuário.
