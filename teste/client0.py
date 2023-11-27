@@ -5,8 +5,8 @@ import threading
 import time
 import socket
 
-receiving = StreamingServer(socket.gethostbyname(socket.gethostname()), 7777)
-sending = CameraClient(socket.gethostbyname(socket.gethostname()), 8888)
+receiving = StreamingServer('10.10.10.90', 8888)
+sending = CameraClient('10.10.10.91', 8888)
 
 t1 = threading.Thread(target=receiving.start_server)
 t1.start()
