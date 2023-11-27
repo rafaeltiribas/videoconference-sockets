@@ -1,6 +1,8 @@
 import socket
 from vidstream import CameraClient
 from vidstream import StreamingServer
+from vidstream import AudioSender
+from vidstream import AudioReceiver
 import threading
 import time
 import random
@@ -124,35 +126,3 @@ if __name__ == "__main__":
 
     threading.Thread(target=recebe, args=(client,)).start()
     iniciar_client(client)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-'''
-# Criar um if else para caso o cadastro seja feito com sucesso ele continue este codigo ou pare.
-
-            #   Receber a porta do cliente que foi cadastrada no servidor.
-            envia(f"CONSULTA {nome}")
-            end_client = client.recv(2048).decode(FORMAT)
-            end_client = end_client.split(',')
-            client_port = end_client[1]
-            client_port = client_port.split(')')
-            client_port = int(client_port[0])
-'''
