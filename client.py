@@ -10,7 +10,7 @@ import random
 
 HEADER = 64
 PORT = 5050 # Porta do servidor.
-SERVER = socket.gethostbyname(socket.gethostname()) # Pega o IP da máquina automaticamente. \ ou SERVER = "192.168.0.177" <-- Ipv4
+SERVER = "192.168.0.177" # Pega o IP da máquina automaticamente. \ ou SERVER = "192.168.0.177" <-- Ipv4 socket.gethostbyname(socket.gethostname())
 FORMAT = 'utf-8'
 ADDR = (SERVER, PORT)
 
@@ -69,7 +69,7 @@ def iniciar_client(client):
                 envia(f"{opcao} {nome} {porta}", client)
                 PORT_CLIENT = int(porta)
                 #   Criar o receiver do cliente streaming de video
-                receiver = StreamingServer(socket.gethostbyname(socket.gethostname()), PORT_CLIENT) # este codigo impede que de erro. mas por que?
+                receiver = StreamingServer(SERVER, PORT_CLIENT) # este codigo impede que de erro. mas por que?
             case "CONSULTA":
                 print("[DIGITE O NOME DE USUÁRIO DO ENDEREÇO A SER CONSULTADO]:")
                 nome = input()
@@ -93,8 +93,8 @@ def iniciar_client(client):
                 end_conn = input()
                 envia(f"{opcao} {end_conn}", client)
                 end_separado = end_conn.split(":")
-                sending = CameraClient(end_separado[0], int((end_separado[1])))
-                t1 = threading.Thread(target=receiver.start_stream)
+                sending = CameraClient(SERVER, int((end_separado[1])))
+                t1 = threading.Thread(target=receiver.start_server)
                 t1.start()
                 
                 time.sleep(2)
@@ -112,8 +112,8 @@ def iniciar_client(client):
                 print("[LIGACAO ACEITA]")
                 end_aceite = input()
                 end_separado = end_aceite.split(":")
-                sending = CameraClient(end_separado[0], int((end_separado[1])))
-                t1 = threading.Thread(target=receiver.start_stream)
+                sending = CameraClient(SERVER, int((end_separado[1])))
+                t1 = threading.Thread(target=receiver.start_server)
                 t1.start()
                 
                 time.sleep(2)

@@ -3,7 +3,7 @@ import threading
 
 HEADER = 64
 PORT = 5050 # Porta do servidor.
-SERVER = socket.gethostbyname(socket.gethostname()) # Pega o IP da máquina automaticamente.
+SERVER = "192.168.0.177" # Pega o IP da máquina automaticamente. [socket.gethostbyname(socket.gethostname())]
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 
