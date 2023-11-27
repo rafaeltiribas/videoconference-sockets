@@ -1,5 +1,7 @@
 from vidstream import CameraClient
 from vidstream import StreamingServer
+from vidstream import AudioSender
+from vidstream import AudioReceiver
 
 import threading
 import time
@@ -15,6 +17,17 @@ time.sleep(5)
 
 t2 = threading.Thread(target=sending.start_stream)
 t2.start()
+
+receiver = AudioReceiver('192.168.0.177', 8887)
+sender = AudioSender('192.168.0.177', 7776)
+
+receiver_thread = threading.Thread(target=receiver.start_server)
+receiver_thread.start()
+
+time.sleep(5)
+
+sender_thread = threading.Thread(target=sender.start_stream)
+sender_thread.start()
 
 while input("") != "STOP":
     continue

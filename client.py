@@ -55,6 +55,7 @@ def iniciar_client(client):
                 PORT_CLIENT = int(porta)
                 #   Criar o receiver do cliente streaming de video
                 receiver = StreamingServer(SERVER, PORT_CLIENT) # este codigo impede que de erro. mas por que?
+                receiver_audio = AudioReceiver(SERVER, PORT_CLIENT-1)
             case "CONSULTA":
                 print("[DIGITE O NOME DE USUÁRIO DO ENDEREÇO A SER CONSULTADO]:")
                 nome = input()
@@ -78,14 +79,23 @@ def iniciar_client(client):
                 end_conn = input()
                 envia(f"{opcao} {end_conn}", client)
                 end_separado = end_conn.split(":")
-                sending = CameraClient(SERVER, int((end_separado[1])))
+                sending = CameraClient(SERVER, int((end_separado[1])))              #Video
+                sender = AudioSender(SERVER, int((end_separado[1]))-1)              #Audio
                 t1 = threading.Thread(target=receiver.start_server)
                 t1.start()
                 
-                time.sleep(10)
+                time.sleep(3)
                 
                 t2 = threading.Thread(target=sending.start_stream)
                 t2.start()
+                
+                receiver_thread = threading.Thread(target=receiver_audio.start_server)
+                receiver_thread.start()
+
+                time.sleep(5)
+
+                sender_thread = threading.Thread(target=sender.start_stream)
+                sender_thread.start()
                 
                 while input("") != "PARAR":
                     continue
@@ -97,18 +107,29 @@ def iniciar_client(client):
                 print("[LIGACAO ACEITA]")
                 end_aceite = input()
                 end_separado = end_aceite.split(":")
-                sending = CameraClient(end_separado[0], int((end_separado[1])))
+                sending = CameraClient(end_separado[0], int((end_separado[1])))     #Video
+                sender = AudioSender(SERVER, int((end_separado[1]))-1)              #Audio
                 t1 = threading.Thread(target=receiver.start_server)
                 t1.start()
                 
-                time.sleep(5)
+                time.sleep(1)
                 
                 t2 = threading.Thread(target=sending.start_stream)
                 t2.start()
                 
+                receiver_thread = threading.Thread(target=receiver_audio.start_server)
+                receiver_thread.start()
+
+                time.sleep(5)
+
+                sender_thread = threading.Thread(target=sender.start_stream)
+                sender_thread.start()
+                
                 while input("") != "PARAR":
                     continue
                 
+                receiver_audio.stop_server()
+                sender.stop_stream()
                 receiver.stop_server()
                 sending.stop_stream()
                 
