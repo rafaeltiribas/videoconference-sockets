@@ -10,7 +10,7 @@ import random
 
 HEADER = 64
 PORT = 5050 # Porta do servidor.
-SERVER = "25.1.98.186" # Pega o IP da máquina automaticamente. \ ou SERVER = "192.168.0.177" <-- Ipv4 socket.gethostbyname(socket.gethostname())
+SERVER = '192.168.0.177' # Pega o IP da máquina automaticamente. \ ou SERVER = "192.168.0.177" <-- Ipv4 socket.gethostbyname(socket.gethostname())
 FORMAT = 'utf-8'
 ADDR = (SERVER, PORT)
 
@@ -97,7 +97,7 @@ def iniciar_client(client):
                 t1 = threading.Thread(target=receiver.start_server)
                 t1.start()
                 
-                time.sleep(2)
+                time.sleep(10)
                 
                 t2 = threading.Thread(target=sending.start_stream)
                 t2.start()
@@ -105,7 +105,7 @@ def iniciar_client(client):
                 while input("") != "PARAR":
                     continue
                 
-                receiver.start_server()
+                receiver.stop_server()
                 sending.stop_stream()
             
             case "ACEITAR":
@@ -116,11 +116,16 @@ def iniciar_client(client):
                 t1 = threading.Thread(target=receiver.start_server)
                 t1.start()
                 
-                time.sleep(2)
+                time.sleep(5)
                 
                 t2 = threading.Thread(target=sending.start_stream)
                 t2.start()
                 
+                while input("") != "PARAR":
+                    continue
+                
+                receiver.stop_server()
+                sending.stop_stream()
                 
                 
                 # Se não tem este pedaço de código ele fica preso na thread de receber
