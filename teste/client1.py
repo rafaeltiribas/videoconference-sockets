@@ -4,7 +4,7 @@ from vidstream import StreamingServer
 import threading
 import time
 
-receiving = StreamingServer('192.168.0.177', 8888)
+receiving = StreamingServer('192.168.0.1', 8888)
 sending = CameraClient('192.168.0.177', 7777)
 
 t1 = threading.Thread(target=receiving.start_server)
