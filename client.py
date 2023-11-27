@@ -5,12 +5,9 @@ import threading
 import time
 import random
 
-#   Cadastro => "CADASTRO, nome"
-#   Consulta => "CONSULTA, nome_consulta"
-
 HEADER = 64
-PORT = 5050 # Porta do servidor.
-SERVER = "25.1.98.186" # Pega o IP da máquina automaticamente. \ ou SERVER = "192.168.0.177" <-- Ipv4 socket.gethostbyname(socket.gethostname())
+PORT = 5050                         # Porta do servidor.
+SERVER = "25.1.98.186"              # Pega o IP da máquina automaticamente. \ ou SERVER = "192.168.0.177" <-- Ipv4 socket.gethostbyname(socket.gethostname())
 FORMAT = 'utf-8'
 ADDR = (SERVER, PORT)
 
@@ -32,27 +29,13 @@ def recebe(client):
         if mensagem != '':
             msg = mensagem.split()
             if(msg[0] == "[ESTAOTELIGANDO]"):
-                print(msg[0])
+                print("[Ligação Recebida]")
                 print(f"[ENDERECO]: {msg[1]}")
                 print("[ACEITAR] | [RECUSAR]")
             else:
                 print(mensagem)
         else:
             print("[MENSAGEM VAZIA]")
-
-
-'''
-def receber_ligacao(client, end_ligacao):
-    #Isso funciona
-    print("[LICAGAO RECEBIDA]")
-    print("[ACEITAR] | [RECUSAR]")
-    print(end_ligacao)
-    escolha = input()
-    envia(f"{escolha}", client)
-    
-    numero_aleatorio = random.randint(6000, 60000)
-    bug_fix = StreamingServer(socket.gethostbyname(socket.gethostname()), numero_aleatorio)
-'''
 
 def iniciar_client(client):
     PORT_CLIENT = "None"
@@ -112,7 +95,7 @@ def iniciar_client(client):
                 print("[LIGACAO ACEITA]")
                 end_aceite = input()
                 end_separado = end_aceite.split(":")
-                sending = CameraClient(SERVER, int((end_separado[1])))
+                sending = CameraClient(end_separado[0], int((end_separado[1])))
                 t1 = threading.Thread(target=receiver.start_server)
                 t1.start()
                 
