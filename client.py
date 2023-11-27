@@ -10,7 +10,7 @@ import random
 
 HEADER = 64
 PORT = 5050 # Porta do servidor.
-SERVER = "192.168.0.177" # Pega o IP da máquina automaticamente. \ ou SERVER = "192.168.0.177" <-- Ipv4 socket.gethostbyname(socket.gethostname())
+SERVER = "25.1.98.186" # Pega o IP da máquina automaticamente. \ ou SERVER = "192.168.0.177" <-- Ipv4 socket.gethostbyname(socket.gethostname())
 FORMAT = 'utf-8'
 ADDR = (SERVER, PORT)
 
