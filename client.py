@@ -9,9 +9,10 @@ import random
 
 HEADER = 64
 PORT = 5050 # Porta do servidor.
-SERVER = '192.168.0.177' # Pega o IP da máquina automaticamente. \ ou SERVER = "192.168.0.177" <-- Ipv4 socket.gethostbyname(socket.gethostname())
+SERVER = '192.168.1.15' # IP do servidor
 FORMAT = 'utf-8'
 ADDR = (SERVER, PORT)
+ADDR_SEND = ''
 
 #   cliente servidor 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -26,13 +27,16 @@ def envia(msg, client):
     client.send(mensagem)
 
 def recebe(client):
+    global ADDR_SEND
     while True:
         mensagem = client.recv(2048).decode(FORMAT)
         if mensagem != '':
             msg = mensagem.split()
             if(msg[0] == "[ESTAOTELIGANDO]"):
                 print("[Ligação Recebida]")
-                print(f"[ENDERECO]: {msg[1]}")
+                ADDR_SEND = msg[1]
+                print(ADDR_SEND)
+                print(f"[ENDERECO]: {ADDR_SEND}")
                 print("[ACEITAR] | [RECUSAR]")
             else:
                 print(mensagem)
@@ -40,6 +44,7 @@ def recebe(client):
             print("[MENSAGEM VAZIA]")
 
 def iniciar_client(client):
+    global ADDR_SEND
     PORT_CLIENT = "None"
     conectado = True
     while conectado:
@@ -54,7 +59,7 @@ def iniciar_client(client):
                 envia(f"{opcao} {nome} {porta}", client)
                 PORT_CLIENT = int(porta)
                 #   Criar o receiver do cliente streaming de video
-                receiver = StreamingServer(SERVER, PORT_CLIENT) # este codigo impede que de erro. mas por que?
+                receiver = StreamingServer(SERVER, PORT_CLIENT) 
                 receiver_audio = AudioReceiver(SERVER, PORT_CLIENT-1)
             case "CONSULTA":
                 print("[DIGITE O NOME DE USUÁRIO DO ENDEREÇO A SER CONSULTADO]:")
@@ -84,7 +89,7 @@ def iniciar_client(client):
                 t1 = threading.Thread(target=receiver.start_server)
                 t1.start()
                 
-                time.sleep(3)
+                time.sleep(10)
                 
                 t2 = threading.Thread(target=sending.start_stream)
                 t2.start()
@@ -100,12 +105,16 @@ def iniciar_client(client):
                 while input("") != "PARAR":
                     continue
                 
+                receiver_audio.stop_server()
+                sender.stop_stream()
                 receiver.stop_server()
                 sending.stop_stream()
+                ADDR_SEND = ''
             
             case "ACEITAR":
                 print("[LIGACAO ACEITA]")
-                end_aceite = input()
+                print(ADDR_SEND)
+                end_aceite = ADDR_SEND
                 end_separado = end_aceite.split(":")
                 sending = CameraClient(end_separado[0], int((end_separado[1])))     #Video
                 sender = AudioSender(SERVER, int((end_separado[1]))-1)              #Audio
@@ -132,7 +141,7 @@ def iniciar_client(client):
                 sender.stop_stream()
                 receiver.stop_server()
                 sending.stop_stream()
-                
+                ADDR_SEND = ''
                 
                 # Se não tem este pedaço de código ele fica preso na thread de receber
                 # Então estou usando para evitar esse erro, mesmo que eu não use essa variável para nada.
