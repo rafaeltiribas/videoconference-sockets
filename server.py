@@ -3,7 +3,7 @@ import threading
 
 HEADER = 64
 PORT = 5050 # Porta do servidor.
-SERVER = '192.168.0.177' # Pega o IP da máquina automaticamente. [socket.gethostbyname(socket.gethostname())]
+SERVER = '192.168.1.15' # IP do servidor
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 
@@ -42,15 +42,6 @@ def gerencia_cliente(conn: any, end: any) -> None:
                     ligar(endereco_destino, conn)
                     res = msg[1]
                     print(res)
-                
-                #case "ACEITAR":
-                   # end_remetente = msg[1]
-                   # if end_remetente in conexoes_usuarios:
-                       # dest_conn = conexoes_usuarios[end_remetente]
-                      #  dest_conn.send(f"[ACEITA]".encode(FORMAT))
-                
-                        
-                
                     
             print(f"[{end}] {msg}\n[TABELA USUÁRIOS ATIVOS] {usuarios}")
     conn.close()
@@ -69,17 +60,7 @@ def ligar(endereco_dest, conn):
         end_ligando = conexoes_contrario[conn]
         dest_conn = conexoes_usuarios[endereco_dest]
         dest_conn.send(f"[ESTAOTELIGANDO] {end_ligando}".encode(FORMAT)) 
-        '''
-        tamanho_msg = get_tamanho(conn)
-        msg = dest_conn.recv(tamanho_msg).decode(FORMAT)
-        msg = msg.split()
-        match msg[0]:
-            case "ACEITAR":
-                print("ACEITOU")
-                #conn.send(f"[ACEITA]".encode(FORMAT))
-            case "RECUSAR":
-                print("RECUSOU")
-        '''
+
 #   Retorna o tamanho da mensagem que o cliente está enviando.
 def get_tamanho(conn: any):
     tamanho_msg = conn.recv(HEADER).decode(FORMAT)

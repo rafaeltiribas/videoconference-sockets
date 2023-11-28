@@ -9,7 +9,7 @@ import random
 
 HEADER = 64
 PORT = 5050 # Porta do servidor.
-SERVER = '192.168.0.177' # Pega o IP da máquina automaticamente. \ ou SERVER = "192.168.0.177" <-- Ipv4 socket.gethostbyname(socket.gethostname())
+SERVER = '192.168.1.15' # IP do servidor
 FORMAT = 'utf-8'
 ADDR = (SERVER, PORT)
 
@@ -54,7 +54,7 @@ def iniciar_client(client):
                 envia(f"{opcao} {nome} {porta}", client)
                 PORT_CLIENT = int(porta)
                 #   Criar o receiver do cliente streaming de video
-                receiver = StreamingServer(SERVER, PORT_CLIENT) # este codigo impede que de erro. mas por que?
+                receiver = StreamingServer(SERVER, PORT_CLIENT) 
                 receiver_audio = AudioReceiver(SERVER, PORT_CLIENT-1)
             case "CONSULTA":
                 print("[DIGITE O NOME DE USUÁRIO DO ENDEREÇO A SER CONSULTADO]:")
@@ -84,7 +84,7 @@ def iniciar_client(client):
                 t1 = threading.Thread(target=receiver.start_server)
                 t1.start()
                 
-                time.sleep(3)
+                time.sleep(10)
                 
                 t2 = threading.Thread(target=sending.start_stream)
                 t2.start()
@@ -100,6 +100,8 @@ def iniciar_client(client):
                 while input("") != "PARAR":
                     continue
                 
+                receiver_audio.stop_server()
+                sender.stop_stream()
                 receiver.stop_server()
                 sending.stop_stream()
             
@@ -132,7 +134,6 @@ def iniciar_client(client):
                 sender.stop_stream()
                 receiver.stop_server()
                 sending.stop_stream()
-                
                 
                 # Se não tem este pedaço de código ele fica preso na thread de receber
                 # Então estou usando para evitar esse erro, mesmo que eu não use essa variável para nada.
