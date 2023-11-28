@@ -71,6 +71,7 @@ def get_tamanho(conn: any):
     
 #   Função de inicialização do servidor.
 def iniciar() -> None:
+    ADDR_SEND = ''
     server.listen()
     while True:
         conn, end = server.accept()
